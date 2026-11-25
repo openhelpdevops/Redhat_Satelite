@@ -609,6 +609,13 @@ hammer repository-set enable \
   --name "Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)" \
   --basearch "x86_64" \
   --releasever "9"
+
+[root@satellite ~]# hammer repository-set enable \
+  --organization "KUBINFRA" \
+  --product "Red Hat Enterprise Linux for x86_64" \
+  --name "Red Hat Satellite Client 6 for RHEL 9 x86_64 (RPMs)" \
+  --basearch "x86_64"
+
 ```
 
 If a requested variant is unavailable, list the available variants by the actual set ID:
