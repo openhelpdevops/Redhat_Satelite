@@ -1272,7 +1272,7 @@ If the machine is already registered elsewhere, plan its migration first. Do not
 ```bash
 hammer host-registration generate-command \
   --organization "KUBINFRA" \
-  --location "Warsaw" \
+  --location "Warsaw-Lab" \
   --activation-keys "AK_RHEL9_DEV" \
   --setup-remote-execution true \
   --setup-insights false \
