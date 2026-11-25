@@ -1111,15 +1111,16 @@ hammer activation-key create \
 
 Create TEST/PROD keys after the view version is available in those environments. If you are still testing DEV, create only the DEV key now.
 
-On older supported Hammer versions without `--content-view-environments`, the single-view equivalent is:
+If Allow multiple content views is off, use the single-view options to create the same key
 
 ```bash
 hammer activation-key create \
   --organization "KUBINFRA" \
   --name "AK_RHEL9_DEV" \
   --unlimited-hosts \
-  --content-view "CV_RHEL9" \
-  --lifecycle-environment "DEV"
+  --description "RHEL 9 registration into DEV" \
+  --lifecycle-environment "DEV" \
+  --content-view "CV_RHEL9"
 ```
 
 Use one syntax supported by your installed `--help`, not both.
