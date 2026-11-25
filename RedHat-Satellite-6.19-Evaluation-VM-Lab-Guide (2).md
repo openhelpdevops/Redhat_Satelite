@@ -135,7 +135,7 @@ default via 192.168.0.1 dev ens18 proto static metric 100
 Use the VM console for a network change. Replace the connection name below with the actual **NAME** shown by `nmcli`; it is not necessarily the interface name.
 
 ```bash
-nmcli connection modify ens160 ipv4.method static ipv4.addresses "192.168.0.35/24" ipv4.gateway "192.168.0.1" ipv4.dns "192.168.0.30" connection.autoconnect yes ipv4.ignore-auto-dns yes
+nmcli connection modify ens18 ipv4.method static ipv4.addresses "192.168.0.35/24" ipv4.gateway "192.168.0.1" ipv4.dns "192.168.0.30" connection.autoconnect yes ipv4.ignore-auto-dns yes
 systemctl restart network
 nmcli connection up ens18
 ```
