@@ -485,7 +485,25 @@ Menu layouts vary: some releases place content items directly under **Content**,
 
 ### 8.1 Theory
 
+
 The manifest tells an organization which Red Hat content it can access. Download it from the Red Hat account's subscription-allocation workflow for Satellite. The exact subscriptions or trial entitlements must permit the desired repositories.
+
+
+Open Services → Subscriptions and Spend → Manifests in the Red Hat Hybrid Cloud Console. Open the Manifests page directly. 
+
+https://console.redhat.com/subscriptions/manifests
+
+Red Hat Documentation
+1. Click Create new manifest.
+2. Enter OPENHELP-SATELLITE-LAB as the name. Under Type, select Satellite 6.19, then click Create. 
+3. Click the new manifest’s name, then Export manifest. When the notification appears, click Download manifest to save the ZIP.
+   
+Step 4 happens after you import the ZIP. For connected Satellite 6.19, a new manifest starts empty. 
+
+In your Satellite web UI, select OPENHELP, then go to Content → Subscriptions → Manage Manifest → Choose File and upload the ZIP. Back on Content → Subscriptions, click Add Subscriptions, enter the quantity for the available RHEL or trial subscription, and click Submit. Red Hat Documentation
+
+If Create new manifest is missing or disabled, confirm that your Satellite trial is Active in Red Hat org 20871561 and that your login has the Subscriptions administrator role.
+
 
 In the documented connected flow, a new Hybrid Cloud Console manifest can initially contain no subscriptions. After importing it, populate the allocation in Satellite through **Content > Subscriptions > Add Subscriptions**. A disconnected manifest exported through the Customer Portal is populated through its corresponding account-side workflow.
 
