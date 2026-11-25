@@ -567,7 +567,10 @@ The first two repositories are usually in the product `Red Hat Enterprise Linux 
 **Satellite:**
 
 ```bash
+
 hammer product list --organization "KUBINFRA"
+
+
 
 hammer repository-set list \
   --organization "KUBINFRA" \
