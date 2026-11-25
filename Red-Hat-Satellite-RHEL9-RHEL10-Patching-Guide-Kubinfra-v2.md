@@ -703,16 +703,17 @@ For the next commands, assume discovery returned the following **example enabled
 
 | Shell variable | Example ID | Repository |
 | --- | --- | --- |
-| `R9_BASE_ID` | `101` | RHEL 9 BaseOS RPMs, x86_64, release 9 |
-| `R9_APP_ID` | `102` | RHEL 9 AppStream RPMs, x86_64, release 9 |
-| `R9_CLIENT_ID` | `103` | Satellite Client 6 for RHEL 9 x86_64 |
+| `R9_BASE_ID` | `4` | RHEL 9 BaseOS RPMs, x86_64, release 9 |
+| `R9_APP_ID` | `5` | RHEL 9 AppStream RPMs, x86_64, release 9 |
+| `R9_CLIENT_ID` | `6` | Satellite Client 6 for RHEL 9 x86_64 |
 
 Set these to **your real IDs**, in the current Satellite shell:
 
 ```bash
-R9_BASE_ID=101
-R9_APP_ID=102
-R9_CLIENT_ID=103
+
+[root@satellite ~]# R9_BASE_ID=4
+[root@satellite ~]# R9_APP_ID=5
+[root@satellite ~]# R9_CLIENT_ID=6
 
 hammer repository info --id "$R9_BASE_ID"
 hammer repository info --id "$R9_APP_ID"
