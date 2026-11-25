@@ -113,40 +113,45 @@ Satellite requires a fresh RHEL base installation dedicated to its services. [4]
 **Run on Satellite.** If you already configured these values in the RHEL installer, verify them and skip the modification commands.
 
 ```bash
-hostnamectl set-hostname satellite.openhelp.net
-nmcli -f NAME,DEVICE connection show --active
-ip -br address
-ip route
+[root@satellite ~]#hostnamectl set-hostname satellite.kubinfra.com
+
+[root@satellite ~]# nmcli -f NAME,DEVICE connection show --active
+NAME   DEVICE
+ens18  ens18
+lo     lo
+
+[root@satellite ~]# ip -br address
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+ens18            UP             192.168.0.35/24 2a02:a31a:c2ab:3e80:be24:11ff:fead:4db9/64 fe80::be24:11ff:fead:4db9/64
+
+[root@satellite ~]# ip route
+default via 192.168.0.1 dev ens18 proto static metric 100
+192.168.0.0/24 dev ens18 proto kernel scope link src 192.168.0.35 metric 100
+
+
+
 ```
 
 Use the VM console for a network change. Replace the connection name below with the actual **NAME** shown by `nmcli`; it is not necessarily the interface name.
 
 ```bash
-SAT_CONN='Wired connection 1'
-
-nmcli connection modify "$SAT_CONN" \
-  ipv4.method manual \
-  ipv4.addresses 192.168.0.70/24 \
-  ipv4.gateway 192.168.0.1 \
-  ipv4.dns '192.168.0.10' \
-  ipv4.ignore-auto-dns yes
-
-nmcli connection up "$SAT_CONN"
+nmcli connection modify ens160 ipv4.method static ipv4.addresses "192.168.0.35/24" ipv4.gateway "192.168.0.1" ipv4.dns "192.168.0.30" connection.autoconnect yes ipv4.ignore-auto-dns yes
+systemctl restart network
+nmcli connection up ens18
 ```
-
-Replace `192.168.0.10` with the DNS server that hosts or resolves your lab zone. Leave IPv6 defaults intact, including loopback `::1`.
+192.168.0.30 is the Redhat Idm server ip which has DNS service running in it.
 
 ## 6. Add forward and reverse DNS
 
-**Run on your FreeIPA DNS server**, if you manage `openhelp.net` with FreeIPA. Otherwise create equivalent A and PTR records on your DNS service.
+**Run on your IPA DNS server**, if you manage `openhelp.net` with FreeIPA. Otherwise create equivalent A and PTR records on your DNS service.
 
 ```bash
 kinit admin
 
 ipa dnsrecord-add openhelp.net satellite \
-  --a-rec=192.168.0.70
+  --a-rec=192.168.0.35
 
-ipa dnsrecord-add openhelp.net rhelclient01 \
+ipa dnsrecord-add kubinfra.com rhelclient01 \
   --a-rec=192.168.0.71
 ```
 
@@ -165,11 +170,11 @@ ipa dnszone-add 0.168.192.in-addr.arpa.
 Then add the PTR records:
 
 ```bash
-ipa dnsrecord-add 0.168.192.in-addr.arpa. 70 \
-  --ptr-rec=satellite.openhelp.net.
+ipa dnsrecord-add 0.168.192.in-addr.arpa. 35 \
+  --ptr-rec=satellite.kubinfra.com.
 
 ipa dnsrecord-add 0.168.192.in-addr.arpa. 71 \
-  --ptr-rec=rhelclient01.openhelp.net.
+  --ptr-rec=rhelclient01.kubinfra.com.
 ```
 
 If records already exist, inspect them and correct the existing record rather than adding conflicting addresses. The commands follow Red Hat's IdM DNS record syntax. [5]
@@ -178,7 +183,7 @@ If records already exist, inspect them and correct the existing record rather th
 
 ```bash
 hostname -f
-getent ahostsv4 satellite.openhelp.net
+getent ahostsv4 satellite.kubinfra.com
 getent hosts cdn.redhat.com
 getent hosts subscription.rhsm.redhat.com
 ```
@@ -215,17 +220,19 @@ Keep the Satellite server registered to Red Hat's CDN. The later client-registra
 **Run on Satellite as root.**
 
 ```bash
-subscription-manager repos --disable='*'
+
+subscription-manager register
+subscription-manager identity
+subscription-manager repos --disable="*"
 
 subscription-manager repos \
   --enable=rhel-9-for-x86_64-baseos-rpms \
   --enable=rhel-9-for-x86_64-appstream-rpms \
   --enable=satellite-6.19-for-rhel-9-x86_64-rpms \
   --enable=satellite-maintenance-6.19-for-rhel-9-x86_64-rpms
-
-dnf clean all
-dnf makecache
-dnf repolist --enabled
+dnf repolist enabled
+dnf upgrade -y
+reboot
 ```
 
 All four repository IDs should appear. These are the repository IDs in the 6.19 connected-installation guide. [6]
@@ -245,75 +252,30 @@ With Simple Content Access, a subscription status label alone can be misleading.
 
 **Run on Satellite as root.** This OS upgrade occurs before Satellite is installed.
 
-```bash
-dnf upgrade -y
-reboot
-```
 
 Log back in, become root, and continue:
 
 ```bash
-sudo -i
-dnf install -y chrony firewalld bind-utils tmux
-systemctl enable --now chronyd firewalld
+dnf install -y chrony bind-utils firewalld tmux
+systemctl enable --now chronyd
+chronyc sources -v
+chronyc tracking
+timedatectl
+dig +short satellite.kubinfra.com
+dig +short -x 192.168.0.35
+dig +short cdn.redhat.com
+getenforce
+systemctl enable --now firewalld
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --permanent --add-port=8000/tcp
+firewall-cmd --permanent --add-port=9090/tcp
+firewall-cmd --reload
+firewall-cmd --list-all
 localectl set-locale LANG=en_US.UTF-8
 ```
 
-## 10. Complete the pre-installation checks
-
-**Run on Satellite as root.**
-
-```bash
-cat /etc/redhat-release
-uname -m
-hostname -f
-dig +short satellite.openhelp.net A
-dig +short -x 192.168.0.70
-getenforce
-ip -6 address show dev lo
-timedatectl
-chronyc tracking
-free -h
-swapon --show
-df -hT / /var/lib/pulp
-```
-
-Confirm:
-
-- The OS is RHEL 9, architecture `x86_64`.
-- Forward DNS returns `192.168.0.70`; reverse DNS returns `satellite.openhelp.net.`.
-- SELinux is `Enforcing`.
-- IPv6 loopback includes `::1`.
-- NTP is synchronized; `chronyc tracking` has normal leap status.
-- VM resources and filesystem capacity match the plan.
-
 Fix time synchronization before installation if it is not working. If NTP is filtered, allow access to your chosen NTP source. Correct forward/reverse DNS is part of Red Hat's preparation procedure. [7]
-
-## 11. Open the firewall for this lab's functions
-
-**Run on Satellite as root.** This example uses external DNS and registers already installed RHEL clients. Additional provisioning features have their own port requirements.
-
-Identify the zone assigned to the VM interface:
-
-```bash
-firewall-cmd --get-active-zones
-```
-
-Replace `public` below if the active interface uses another zone:
-
-```bash
-SAT_ZONE=public
-
-firewall-cmd --permanent --zone="$SAT_ZONE" \
-  --add-service=ssh \
-  --add-service=http \
-  --add-service=https \
-  --add-port=8000/tcp \
-  --add-port=9090/tcp
-
-firewall-cmd --reload
-firewall-cmd --zone="$SAT_ZONE" --list-all
-```
 
 Basic traffic paths:
 
@@ -342,7 +304,6 @@ Inside the `tmux` session, choose an admin password at the prompt:
 ```bash
 read -rsp 'Choose the Satellite admin password: ' SAT_ADMIN_PASSWORD
 echo
-
 satellite-installer --scenario satellite \
   --foreman-initial-organization 'OPENHELP' \
   --foreman-initial-location 'Warsaw-Lab' \
@@ -385,14 +346,14 @@ For `hammer auth login`, supply username `admin` and the password chosen during 
 
 `hammer ping` should show successful checks for the core services. Investigate any failed service before importing content. [9]
 
-On the browser laptop, ensure `satellite.openhelp.net` resolves to `192.168.0.70`, then open:
+On the browser laptop, ensure `satellite.kubinfra.com` resolves to `192.168.0.35`, then open:
 
-[https://satellite.openhelp.net](https://satellite.openhelp.net)
+(https://satellite.kubinfra.com)
 
 Satellite initially uses its generated CA. To trust it in your browser, copy this **public CA certificate** from Satellite using your administrative account:
 
 ```bash
-scp labadmin@satellite.openhelp.net:/var/www/html/pub/katello-server-ca.crt .
+scp labadmin@satellite.kubinfra.com:/var/www/html/pub/katello-server-ca.crt .
 ```
 
 Import that certificate into the browser/OS certificate-authority trust store. Sign in as `admin` and select organization **OPENHELP** and location **Warsaw-Lab**. [10]
@@ -411,7 +372,7 @@ In the [Red Hat Hybrid Cloud Console](https://console.redhat.com/):
 
 In Satellite:
 
-1. Set organization context to **OPENHELP**.
+1. Set organization context to **KUBEINFRA**.
 2. Open **Content → Subscriptions → Manage Manifest**.
 3. Upload the exported ZIP file without unpacking it.
 4. Confirm that the imported subscription/content information is present. [6]
@@ -420,7 +381,7 @@ If manifest creation is disabled, check your Hybrid Cloud Console subscription-a
 
 ## 15. Enable and synchronize RHEL 9 repositories
 
-In Satellite, under organization **OPENHELP**:
+In Satellite, under organization **KUBEINFRA**:
 
 1. Open **Content → Red Hat Repositories**.
 2. Enable **Red Hat Enterprise Linux 9 for x86_64 – BaseOS (RPMs)**, release **9**.
