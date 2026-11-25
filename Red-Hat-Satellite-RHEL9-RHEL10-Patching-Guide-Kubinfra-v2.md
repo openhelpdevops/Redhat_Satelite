@@ -678,6 +678,23 @@ For repository sets whose name already fixes the OS and architecture, no `--rele
 
 ```bash
 hammer repository list --organization "KUBINFRA"
+
+or
+
+
+[root@satellite ~]# hammer repository list \
+  --organization "KUBINFRA" \
+  --library true \
+  --full-result true \
+  --fields Id,Name |
+grep -E \
+  -e '^ID[[:space:]]*\|' \
+  -e 'Red Hat Enterprise Linux 9 for x86_64 - (BaseOS|AppStream) (RPMs|\(RPMs\)) 9[[:space:]]*$' \
+  -e 'Red Hat Satellite Client 6 for RHEL 9 x86_64 (RPMs|\(RPMs\))[[:space:]]*$'
+ID | NAME
+5  | Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs 9
+4  | Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs 9
+6  | Red Hat Satellite Client 6 for RHEL 9 x86_64 RPMs
 ```
 
 A **repository-set ID**, an enabled **repository ID**, and a client **content label** identify different objects.
