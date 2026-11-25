@@ -863,8 +863,23 @@ hammer lifecycle-environment create \
   --description "Approved production patch content" \
   --prior "TEST"
 
-hammer lifecycle-environment list --organization "KUBINFRA"
-hammer lifecycle-environment paths --organization "KUBINFRA"
+[root@satellite ~]# hammer lifecycle-environment list --organization "KUBINFRA"
+---|---------|--------
+ID | NAME    | PRIOR
+---|---------|--------
+2  | DEV     | Library
+1  | Library |
+4  | PROD    | TEST
+3  | TEST    | DEV
+---|---------|--------
+[root@satellite ~]# hammer lifecycle-environment paths --organization "KUBINFRA"
+------------------------------
+LIFECYCLE PATH
+------------------------------
+Library >> DEV >> TEST >> PROD
+------------------------------
+
+
 ```
 
 If environments already exist, inspect them instead of recreating them. Keep their actual labels for activation keys and host assignments.
