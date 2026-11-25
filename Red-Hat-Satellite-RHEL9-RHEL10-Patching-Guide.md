@@ -338,12 +338,84 @@ An HTTP redirect to the login page is normal. A certificate validation failure m
 **Satellite:**
 
 ```bash
+mkdir -p /root/.hammer/cli.modules.d
+vi /root/.hammer/cli.modules.d/foreman.yml
+```
+If the file is empty, add this. If it already has a :foreman: section, add or update the :use_sessions: line inside that section. Use two spaces for indentation.
+```bash
+:foreman:
+  :use_sessions: true
+```
+
+```bash
 hammer --version
-hammer auth login
-hammer auth status
-hammer ping
-hammer organization list
-hammer location list
+[root@satellite ~]# hammer auth login basic --username admin
+[Foreman] Password for admin:
+Successfully logged in as 'admin'.
+
+[root@satellite ~]# hammer auth status
+Session exists, currently logged in as 'admin'.
+[root@satellite ~]# hammer organization list
+---|----------|----------|-------------|---------
+ID | TITLE    | NAME     | DESCRIPTION | LABEL
+---|----------|----------|-------------|---------
+1  | KUBINFRA | KUBINFRA |             | KUBINFRA
+---|----------|----------|-------------|---------
+
+
+[root@satellite ~]# hammer auth status
+Session exists, currently logged in as 'admin'.
+
+root@satellite ~]# hammer ping
+database:
+    Status:          ok
+    Server Response: Duration: 1ms
+cache:
+    servers:
+     1) Status:          ok
+        Server Response: Duration: 1ms
+candlepin:
+    Status:          ok
+    Server Response: Duration: 80ms
+candlepin_auth:
+    Status:          ok
+    Server Response: Duration: 79ms
+candlepin_events:
+    Status:          ok
+    message:         0 Processed, 0 Failed
+    Server Response: Duration: 0ms
+katello_events:
+    Status:          ok
+    message:         0 Processed, 0 Failed
+    Server Response: Duration: 1ms
+pulp3:
+    Status:          ok
+    Server Response: Duration: 278ms
+pulp3_content:
+    Status:          ok
+    Server Response: Duration: 200ms
+foreman_tasks:
+    Status:          ok
+    Server Response: Duration: 6ms
+
+
+
+
+[root@satellite ~]# hammer organization list
+---|----------|----------|-------------|---------
+ID | TITLE    | NAME     | DESCRIPTION | LABEL
+---|----------|----------|-------------|---------
+1  | KUBINFRA | KUBINFRA |             | KUBINFRA
+---|----------|----------|-------------|---------
+
+
+
+[root@satellite ~]# hammer location list
+---|------------|------------|------------
+ID | TITLE      | NAME       | DESCRIPTION
+---|------------|------------|------------
+2  | Warsaw-Lab | Warsaw-Lab |
+---|------------|------------|-----------
 ```
 
 `hammer auth login` prompts for Satellite application credentials. SSH/root access to the OS and Satellite UI credentials are different identities. See [S14](#s14).
