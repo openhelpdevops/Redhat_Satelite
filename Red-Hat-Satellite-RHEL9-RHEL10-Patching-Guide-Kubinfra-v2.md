@@ -727,6 +727,23 @@ For a patching repository that should be ready before a change window, use **Imm
 **Satellite, using the real IDs from section 9:**
 
 ```bash
+[root@satellite ~]# hammer repository list \
+  --organization "KUBINFRA" \
+  --library true \
+  --full-result true \
+  --fields Id,Name |
+grep -E \
+  -e '^ID[[:space:]]*\|' \
+  -e 'Red Hat Enterprise Linux 9 for x86_64 - (BaseOS|AppStream) (RPMs|\(RPMs\)) 9[[:space:]]*$' \
+  -e 'Red Hat Satellite Client 6 for RHEL 9 x86_64 (RPMs|\(RPMs\))[[:space:]]*$'
+ID | NAME
+5  | Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs 9
+4  | Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs 9
+6  | Red Hat Satellite Client 6 for RHEL 9 x86_64 RPMs
+```
+
+
+```bash
 hammer repository update --id "$R9_BASE_ID" --download-policy immediate
 hammer repository update --id "$R9_APP_ID" --download-policy immediate
 hammer repository update --id "$R9_CLIENT_ID" --download-policy immediate
