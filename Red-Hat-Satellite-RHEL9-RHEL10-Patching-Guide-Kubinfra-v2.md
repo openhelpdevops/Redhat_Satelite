@@ -1044,6 +1044,26 @@ Do not run these later-stage promotions before the required validation in a real
 
 Do not auto-promote to every stage in the publishing wizard during a controlled campaign. See [S5](#s5).
 
+## Run this on satellite.kubinfra.com to get the actual label for your activation key
+```bash
+[root@satellite ~]# hammer content-view-environment list --organization "KUBINFRA"
+---|------------------|-----------------------|---------------------------|---------|-------------|-----------------------|-------------
+ID | LABEL            | LIFECYCLE ENVIRONMENT | CONTENT VIEW              | DEFAULT | HOSTS COUNT | ACTIVATION KEYS COUNT | ORGANIZATION
+---|------------------|-----------------------|---------------------------|---------|-------------|-----------------------|-------------
+1  | Library          | Library               | Default Organization View | true    | 0           | 0                     | KUBINFRA
+2  | Library/cv_rhel9 | Library               | CV_RHEL9                  | false   | 0           | 0                     | KUBINFRA
+3  | dev/cv_rhel9     | DEV                   | CV_RHEL9                  | false   | 0           | 0                     | KUBINFRA
+4  | test/cv_rhel9    | TEST                  | CV_RHEL9                  | false   | 0           | 0                     | KUBINFRA
+5  | prod/cv_rhel9    | PROD                  | CV_RHEL9                  | false   | 0           | 0                     | KUBINFRA
+6  | Library/sree     | Library               | sree                      | false   | 0           | 0                     | KUBINFRA
+7  | dev/sree         | DEV                   | sree                      | false   | 0           | 0                     | KUBINFRA
+8  | test/sree        | TEST                  | sree                      | false   | 0           | 0                     | KUBINFRA
+9  | prod/sree        | PROD                  | sree                      | false   | 0           | 0                     | KUBINFRA
+---|------------------|-----------------------|---------------------------|---------|-------------|-----------------------|-------------
+
+```
+
+
 ## 13. Create activation keys and host collections
 
 ### 13.1 Theory
