@@ -348,7 +348,10 @@ If the file is empty, add this. If it already has a :foreman: section, add or up
 ```
 
 ```bash
-hammer --version
+[root@satellite ~]# hammer --version
+hammer (3.18.0)
+
+
 [root@satellite ~]# hammer auth login basic --username admin
 [Foreman] Password for admin:
 Successfully logged in as 'admin'.
