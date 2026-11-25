@@ -58,8 +58,8 @@ The following are **example addresses**. Confirm they are unused and reserve/exc
 |---|---|
 | LAN | `192.168.0.0/24` |
 | Gateway | `192.168.0.1` |
-| FreeIPA/DNS server | `192.168.0.10` — verify your actual address |
-| Satellite | `192.168.0.70/24` |
+| Redhat IPA/DNS server | `192.168.0.30` — verify your actual address |
+| Satellite | `192.168.0.35/24` |
 | Test client | `192.168.0.71/24` |
 | Satellite URL | `https://satellite.kubinfra.com` |
 | Organization | `KUBINFRA` |
