@@ -614,9 +614,37 @@ hammer repository-set enable \
 If a requested variant is unavailable, list the available variants by the actual set ID:
 
 ```bash
-hammer repository-set available-repositories \
-  --organization "KUBINFRA" \
-  --id 1234
+root@satellite ~]# hammer repository-set available-repositories --organization "KUBINFRA" --id 11049
+------------------------------------------------------|---------|--------
+NAME                                                  | RELEASE | ENABLED
+------------------------------------------------------|---------|--------
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9       | yes
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.9     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.8     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.7     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.6     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.5     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.4     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.3     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.2     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.1     | no
+Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs) | 9.0     | no
+------------------------------------------------------|---------|--------
+[root@satellite ~]# hammer repository-set available-repositories --organization "KUBINFRA" --id 11055
+---------------------------------------------------------|---------|--------
+NAME                                                     | RELEASE | ENABLED
+---------------------------------------------------------|---------|--------
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9       | yes
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.9     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.8     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.7     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.6     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.5     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.4     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.3     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.2     | no
+Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs) | 9.1     | no
+
 ```
 
 `1234` is only an example repository-set ID. Use the ID returned by `repository-set list`; do not guess a minor release or enable EUS to bypass a missing entitlement.
